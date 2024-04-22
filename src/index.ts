@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { Track } from "./models/tracks";
 import {
   getAccessToken,
   getArtist,
@@ -7,7 +6,8 @@ import {
   getTargetArtistId,
 } from "./spotify";
 import { printTrack } from "./utils";
-import { Database } from "./database/database";
+import { AppDataSource } from "./database/database";
+import { Track } from "./database/entities/tracks";
 dotenv.config();
 
 const main = async () => {
@@ -34,10 +34,6 @@ const main = async () => {
 
   console.table(trackWithFeats.map(printTrack));
 
-  const database = new Database();
-  await database.connect();
-  const client = await database.getClient();
-
   const kendrickData = {
     id: "2YZyLoL8N0Wb9xBt1NhZWg",
     name: "Kendrick Lamar",
@@ -47,15 +43,7 @@ const main = async () => {
     degree: 3,
   };
 
-  // SQL query to insert Kendrick Lamar into the Artist table
-  const query = `
-    INSERT INTO Artist (id, name, genres, followers, popularity, degree)
-    VALUES ($1, $2, $3, $4, $5, $6);
-`;
-
-  // Execute the query
-  const result = await client.query(query, [kendrickData]);
-  console.log("Kendrick Lamar inserted successfully!");
+  AppDataSource.initialize().then(() => {});
 };
 
 main();

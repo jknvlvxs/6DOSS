@@ -1,27 +1,17 @@
-import { Client } from "pg";
+import "dotenv/config";
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 
-export class Database {
-  private client: Client;
+const port = process.env.DB_PORT as number | undefined;
 
-  constructor() {
-    this.client = new Client({
-      user: process.env.DB_USER,
-      host: "localhost",
-      database: process.env.DB_DATABASE,
-      password: process.env.DB_PASSWORD,
-      port: parseInt(process.env.DB_EXTERNAL_PORT!),
-    });
-  }
+export const AppDataSource = new DataSource({
+  type: "postgres",
+  host: process.env.DB_HOST,
+  port: port,
+  username: process.env.DB_USER,
+  password: String(process.env.DB_PASSWORD),
+  database: process.env.DB_DATABASE,
 
-  async connect() {
-    await this.client.connect();
-  }
-
-  async disconnect() {
-    await this.client.end();
-  }
-
-  async getClient() {
-    return this.client;
-  }
-}
+  entities: [`${__dirname}/**/entities/*.{ts,js}`],
+  migrations: [`${__dirname}/**/migrations/*.{ts,js}`],
+});
