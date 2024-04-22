@@ -1,27 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "lib": ["ES2022"],
-    "allowJs": true,
-    "skipLibCheck": true,
+    "target": "es2016",
+    "module": "commonjs",
+    "rootDir": "./",
+    "resolveJsonModule": true /* in case you are importing JSON files */,
+    "outDir": "./dist",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "rootDir": "./src", 
-    "outDir": "./dist"
-  },
-  "exclude": [
-    "node_modules",
-  ],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "sourceMap": true
   }
 }
