@@ -1,5 +1,5 @@
-import { Artist } from "./models/artists";
-import { Track } from "./models/tracks";
+import { Artist } from "./database/entities/artists";
+import { Track } from "./database/entities/tracks";
 
 export const printTrack = (track: Track) => {
   class PrintTrack {
