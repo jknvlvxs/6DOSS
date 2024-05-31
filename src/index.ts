@@ -16,51 +16,51 @@ import {
 dotenv.config();
 
 const main = async () => {
-  const dataSource = await AppDataSource.initialize();
-  const token = await getAccessToken();
-  
-  try {
-    await dataSource.transaction(async (transactionEntityManager) => {
-      const artistRepository = new ArtistRepository(transactionEntityManager.getRepository(Artist));
-      const trackRepository = new TrackRepository(transactionEntityManager.getRepository(Track));
+	const dataSource = await AppDataSource.initialize();
+	const token = await getAccessToken();
 
-      const hasTargetArtist = await artistRepository.getTargetArtist();
+	try {
+		await dataSource.transaction(async (transactionEntityManager) => {
+			const artistRepository = new ArtistRepository(transactionEntityManager.getRepository(Artist));
+			const trackRepository = new TrackRepository(transactionEntityManager.getRepository(Track));
 
-      if(!hasTargetArtist || !hasTargetArtist.mined_at) {
-        // Step 1: Get the Target Artist
-        const targetArtist = await getArtistByName(process.env.KEY_ARTIST!, token);
+			const hasTargetArtist = await artistRepository.getTargetArtist();
 
-        if (!targetArtist) return console.error("Artist not found");
+			if (!hasTargetArtist || !hasTargetArtist.mined_at) {
+				// Step 1: Get the Target Artist
+				const targetArtist = await getArtistByName(process.env.KEY_ARTIST!, token);
 
-        const artist = (await artistRepository.create({...targetArtist, degree: 0}));
+				if (!targetArtist) return console.error("Artist not found");
 
-        // Step 2: Get the Top Tracks of the Target Artist
-        const trackWithFeats = await getArtistTopTracks(artist!.id, token);
+				const artist = (await artistRepository.create({ ...targetArtist, degree: 0 }));
 
-        // Step 3: Get the Features Artists
-        const features = trackWithFeats.map((track: Track) => track.artists.filter((a) => a.id !== artist!.id).map((a) => a.id));
-        const listFeatures = features.reduce((acc, curr) => acc.concat(curr), []);
-        const uniqueFeatures = [...new Set(listFeatures)];
+				// Step 2: Get the Top Tracks of the Target Artist
+				const trackWithFeats = await getArtistTopTracks(artist!.id, token);
 
-        const artists = await getSeveralArtists(uniqueFeatures, token);
-        await Promise.all(artists.map(async (a) => artistRepository.create({...a, degree: 1})));
+				// Step 3: Get the Features Artists
+				const features = trackWithFeats.map((track: Track) => track.artists.filter((a) => a.id !== artist!.id).map((a) => a.id));
+				const listFeatures = features.reduce((acc, curr) => acc.concat(curr), []);
+				const uniqueFeatures = [...new Set(listFeatures)];
 
-        // Step 4: Set tracks from target artist
-        await Promise.all(trackWithFeats.map(async (track: Track) => trackRepository.create(track)));
-        await artistRepository.setArtistMinedAt(artist!.id);
-      } else {
+				const artists = await getSeveralArtists(uniqueFeatures, token);
+				await Promise.all(artists.map(async (a) => artistRepository.create({ ...a, degree: 1 })));
+
+				// Step 4: Set tracks from target artist
+				await Promise.all(trackWithFeats.map(async (track: Track) => trackRepository.create(track)));
+				await artistRepository.setArtistMinedAt(artist!.id);
+			} else {
 				console.log("Target Artist already mined, skipping...")
 			}
 
-      // Step 5: Set Loop to get the features of the features
-      const degree = parseInt(process.env.DEGREE!) || 1;
-			const limit = parseInt(process.env.LIMIT!) || 400;
+			// Step 5: Set Loop to get the features of the features
+			const degree = parseInt(process.env.DEGREE!) || 1;
+			const limit = parseInt(process.env.LIMIT!) || 100;
 
 			const newFeatures = await artistRepository.getArtistsByDegree(degree, limit);
 
 			const nextDegrees = await Promise.all(newFeatures.map(async (artist) => {
 				const tracks = await getArtistTopTracks(artist.id, token);
-				
+
 				const features = tracks.map((track: Track) => track.artists.filter((a) => a.id !== artist.id).map((a) => a.id));
 				const listFeatures = features.reduce((acc, curr) => acc.concat(curr), []);
 				const uniqueFeatures = [...new Set(listFeatures)];
@@ -71,10 +71,10 @@ const main = async () => {
 				}
 
 				const artists = await getSeveralArtistsSplit(uniqueFeatures, token);
-				
+
 				await artistRepository.setArtistMinedAt(artist.id);
 
-				return {artists, tracks};
+				return { artists, tracks };
 			}));
 
 			const artists = nextDegrees.map((a) => a.artists).reduce((acc, curr) => acc.concat(curr), [])
@@ -83,10 +83,10 @@ const main = async () => {
 			const tracks = nextDegrees.map((a) => a.tracks).reduce((acc, curr) => acc.concat(curr), [])
 				.filter((a, index, self) => self.findIndex((t) => t.id === a.id) === index);
 
-			await Promise.all(artists.map(async (a) => artistRepository.create({...a, degree: degree + 1})));
+			await Promise.all(artists.map(async (a) => artistRepository.create({ ...a, degree: degree + 1 })));
 			await Promise.all(tracks.map(async (track: Track) => trackRepository.create(track)));
 
-			console.log(`Finishing run with ${artists.length} artists with ${degree + 1} mined`);
+			console.log(`Finishing run with ${artists.length} artists with degree = ${degree + 1} mined`);
 
 			const hasMoreArtists = await artistRepository.getArtistsByDegree(degree);
 
@@ -95,11 +95,11 @@ const main = async () => {
 			} else {
 				console.log("No more artists to mine... Increase the degree on .env for the next run!");
 			}
-    });
-  } catch (error) {
+		});
+	} catch (error) {
 		console.error("An error occurred. Please check the log file for more details!");
 		logger.error(error);
-  }
+	}
 };
 
 main();

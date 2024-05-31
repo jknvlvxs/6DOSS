@@ -33,7 +33,7 @@ export class ArtistRepository {
       popularity: MoreThan(30)
     };
 
-    return this.repository.find({ where, take: limit });
+    return this.repository.find({ where, take: limit, order: { followers: "DESC" }});
   }
 
   async setArtistMinedAt(id: string) {
