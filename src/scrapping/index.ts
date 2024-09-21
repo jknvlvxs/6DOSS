@@ -11,7 +11,7 @@ import {
 	getArtistTopTracks,
 	getSeveralArtists,
 	getSeveralArtistsSplit
-} from "./spotify";
+} from "./spotify.api";
 
 dotenv.config();
 
