@@ -1,8 +1,8 @@
-# 6DTify
+# 6DOSS | Six Degrees of Separation Spotify
 
 ## Overview
 
-6DTify is a project designed to scrape Spotify data related to collaborative music efforts. The primary aim is to study and analyze a complex network based on the concept of 'Six Degrees of Separation' from a specific artist.
+6DOSS is a project designed to scrape Spotify data related to collaborative music efforts. The primary aim is to study and analyze a complex network based on the concept of 'Six Degrees of Separation' from a specific artist.
 
 ## Motivation
 
@@ -39,7 +39,7 @@ The motivation behind this project stems from the fascination with exploring the
 
 ## Contribution
 
-Contributions to 6DTify are welcome! Feel free to open issues for feature requests, bug reports, or general feedback. Pull requests are also encouraged for those willing to contribute code improvements or new features.
+Contributions to 6DOSS are welcome! Feel free to open issues for feature requests, bug reports, or general feedback. Pull requests are also encouraged for those willing to contribute code improvements or new features.
 
 ## License
 
@@ -52,7 +52,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-For any inquiries or discussions regarding 6DTify, feel free to reach out to the project maintainer at [dev.julio.alves@gmail.com](mailto:dev.julio.alves@gmail.com).
+For any inquiries or discussions regarding 6DOSS, feel free to reach out to the project maintainer at [dev.julio.alves@gmail.com](mailto:dev.julio.alves@gmail.com).
 
 ---
 
